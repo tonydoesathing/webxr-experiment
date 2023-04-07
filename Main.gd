@@ -80,7 +80,7 @@ func _webxr_session_failed(message: String) -> void:
 	OS.alert("Failed to initialize: " + message)
 
 func _setup():
-	for i in range(-100,100):
+	for i in range(-75,75):
 		var line = Line.instance()
 		line.translate(Vector3(0,i,0))
 		line.black=true

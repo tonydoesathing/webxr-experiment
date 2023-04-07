@@ -13,12 +13,14 @@ var rot_speed
 
 
 func _ready():
+	
+	randomize()
+	rot_speed = rand_range(0.005,0.1)
 	if black:
 		mat=black_mat
 	else:
 		mat=white_mat
-	randomize()
-	rot_speed = rand_range(0.005,0.1)
+		rot_speed*=-1
 	var outside_radius = rand_range(6,8)
 	
 	var outside = CSGCylinder.new()
