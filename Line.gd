@@ -18,7 +18,7 @@ func _ready():
 	else:
 		mat=white_mat
 	randomize()
-	rot_speed = rand_range(0.05,0.5)
+	rot_speed = rand_range(0.005,0.1)
 	var outside_radius = rand_range(6,8)
 	
 	var outside = CSGCylinder.new()
@@ -39,14 +39,7 @@ func _ready():
 	inside.material=self.mat
 	inside.operation=CSGShape.OPERATION_SUBTRACTION
 	self.add_child(inside)
-	
-#	var limiter_l = CSGBox.new()
-#	limiter_l.translate(Vector3(outside.radius-1,0,0))
-#	limiter_l.width=rand_range(2,(outside.radius*2)-2)
-#	limiter_l.depth=rand_range(1,outside.radius*2)
-#	limiter_l.material=self.mat
-#	limiter_l.operation=CSGShape.OPERATION_SUBTRACTION
-#	self.add_child(limiter_l)
+
 	
 	var limiter_r = CSGBox.new()
 	limiter_r.width=16

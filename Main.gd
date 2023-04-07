@@ -86,12 +86,13 @@ func _setup():
 		line.black=true
 		self.add_child(line)
 		
-		var coin = randi()%int(floor(abs(i)/5)+1)
+		var coin = int(floor(rand_range(0,abs(i)/5)))
 		if coin==1:
 			var line_w = Line.instance()
 			line_w.translate(Vector3(0,i+0.5,0))
 			line_w.black=false
 			self.add_child(line_w)
+			
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
 #	pass
