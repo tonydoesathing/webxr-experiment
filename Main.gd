@@ -105,18 +105,26 @@ var mouseDelta
 const lookSensitivity : float = 10.0
 const minAngle : float = -90.0
 const maxAngle : float = 90.0
+var mouseDown=false
 
 func _input(event):
-	if event is InputEventMouseMotion:
-		mouseDelta = event.relative
-	if event is InputEventMouseButton or event is InputEventScreenDrag or event is InputEventScreenTouch:
-		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED if event.pressed else Input.MOUSE_MODE_VISIBLE)
+	if !isVR:
+		if event is InputEventMouseMotion:
+			mouseDelta = event.relative
+		if event is InputEventMouseButton or event is InputEventScreenDrag or event is InputEventScreenTouch:
+			if event.pressed:
+				Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+				mouseDown=true
+			else:
+				Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+				mouseDown=false
 
 func _process(delta):
-	if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
-		$ARVROrigin/ARVRCamera.rotation_degrees.x -= mouseDelta.y * lookSensitivity * delta
-		$ARVROrigin/ARVRCamera.rotation_degrees.x = clamp($ARVROrigin/ARVRCamera.rotation_degrees.x, minAngle, maxAngle)
+	if !isVR:
+		if mouseDown:
+			$ARVROrigin/ARVRCamera.rotation_degrees.x -= mouseDelta.y * lookSensitivity * delta
+			$ARVROrigin/ARVRCamera.rotation_degrees.x = clamp($ARVROrigin/ARVRCamera.rotation_degrees.x, minAngle, maxAngle)
+			
+			$ARVROrigin/ARVRCamera.rotation_degrees.y -= mouseDelta.x * lookSensitivity * delta
 		
-		$ARVROrigin/ARVRCamera.rotation_degrees.y -= mouseDelta.x * lookSensitivity * delta
-	
-	mouseDelta = Vector2()
+		mouseDelta = Vector2()
