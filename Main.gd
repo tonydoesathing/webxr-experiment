@@ -4,10 +4,11 @@ var webxr_interface
 var vr_supported = false
 
 const Line = preload("res://Line.tscn")
-
+var isVR=false
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	$Button.connect("pressed", self, "_on_Button_pressed")
+	$CanvasLayer/Button.connect("pressed", self, "_on_Button_pressed")
+	$CanvasLayer/Button2.connect("pressed",self, "_no_vr_button_pressed")
 	webxr_interface = ARVRServer.find_interface("WebXR")
 	if webxr_interface:
 		# With Godot 3.5-beta4 and later, the following setting is recommended!
@@ -31,6 +32,10 @@ func _ready():
 func _webxr_session_supported(session_mode: String, supported: bool) -> void:
 	if session_mode == 'immersive-vr':
 		vr_supported = supported
+
+func _no_vr_button_pressed() -> void:
+	$CanvasLayer.visible = false
+	self._setup()
 
 func _on_Button_pressed() -> void:
 	if not vr_supported:
@@ -61,7 +66,8 @@ func _on_Button_pressed() -> void:
 		return
  
 func _webxr_session_started() -> void:
-	$Button.visible = false
+	$CanvasLayer.visible = false
+	isVR=true
 	self._setup()
 	# This tells Godot to start rendering to the headset.
 	get_viewport().arvr = true
@@ -71,7 +77,8 @@ func _webxr_session_started() -> void:
 	print ("Reference space type: " + webxr_interface.reference_space_type)
  
 func _webxr_session_ended() -> void:
-	$Button.visible = true
+	$CanvasLayer.visible = true
+	isVR=false
 	# If the user exits immersive mode, then we tell Godot to render to the web
 	# page again.
 	get_viewport().arvr = false
@@ -93,6 +100,25 @@ func _setup():
 			line_w.black=false
 			self.add_child(line_w)
 			
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass
+
+var mouseDelta
+const lookSensitivity : float = 10.0
+const minAngle : float = -90.0
+const maxAngle : float = 90.0
+
+func _input(event):
+	if event is InputEventMouseMotion:
+		mouseDelta = event.relative
+	if event is InputEventMouseButton:
+		match event.button_index:
+			BUTTON_LEFT: # Only allows rotation if right click down
+				Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED if event.pressed else Input.MOUSE_MODE_VISIBLE)
+
+func _process(delta):
+	if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
+		$ARVROrigin/ARVRCamera.rotation_degrees.x -= mouseDelta.y * lookSensitivity * delta
+		$ARVROrigin/ARVRCamera.rotation_degrees.x = clamp($ARVROrigin/ARVRCamera.rotation_degrees.x, minAngle, maxAngle)
+		
+		$ARVROrigin/ARVRCamera.rotation_degrees.y -= mouseDelta.x * lookSensitivity * delta
+	
+	mouseDelta = Vector2()
