@@ -109,7 +109,7 @@ const maxAngle : float = 90.0
 func _input(event):
 	if event is InputEventMouseMotion:
 		mouseDelta = event.relative
-	if event is InputEventMouseButton or event is InputEventScreenTouch:
+	if event is InputEventMouseButton or event is InputEventScreenDrag or event is InputEventScreenTouch:
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED if event.pressed else Input.MOUSE_MODE_VISIBLE)
 
 func _process(delta):
